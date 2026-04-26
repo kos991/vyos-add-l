@@ -16,16 +16,16 @@ sudo apt-get update
 echo "Cloning vyos-build repositories..."
 git clone https://github.com/vyos/vyos-build
 
-bash $SCRIPT_DIR/patch-and-build-vyos-1x.sh
-
+echo "Building vyos-1x package..."
+bash "$SCRIPT_DIR/patch-and-build-vyos-1x.sh"
 
 echo "Building kernel and related packages..."
-bash $SCRIPT_DIR/patch-and-build-kernel.sh
-bash $SCRIPT_DIR/patch-and-build-kernel-related-packages.sh
+bash "$SCRIPT_DIR/patch-and-build-kernel.sh"
+bash "$SCRIPT_DIR/patch-and-build-kernel-related-packages.sh"
 rm -rf $VYOS_BUILD_ROOT/scripts/package-build/linux-kernel
 
 echo "Building Landscape package..."
-bash $SCRIPT_DIR/build-landscape-package.sh
+bash "$SCRIPT_DIR/build-landscape-package.sh"
 
 echo "Building VyOS image..."
-sudo -E bash $SCRIPT_DIR/patch-and-build-vyos-image.sh
+sudo -E bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
