@@ -1,7 +1,13 @@
-export PROJECT_ROOT=$(pwd)
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the project root directory (parent of scripts/)
+export PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 export VYOS_BUILD_ROOT=$PROJECT_ROOT/vyos-build
 
 set -e
+
+echo "Project root: $PROJECT_ROOT"
+echo "Scripts directory: $SCRIPT_DIR"
 
 echo "Updating package lists..."
 sudo apt-get update
@@ -10,16 +16,16 @@ sudo apt-get update
 echo "Cloning vyos-build repositories..."
 git clone https://github.com/vyos/vyos-build
 
-bash scripts/patch-and-build-vyos-1x.sh
+bash $SCRIPT_DIR/patch-and-build-vyos-1x.sh
 
 
 echo "Building kernel and related packages..."
-bash scripts/patch-and-build-kernel.sh
-bash scripts/patch-and-build-kernel-related-packages.sh
+bash $SCRIPT_DIR/patch-and-build-kernel.sh
+bash $SCRIPT_DIR/patch-and-build-kernel-related-packages.sh
 rm -rf $VYOS_BUILD_ROOT/scripts/package-build/linux-kernel
 
 echo "Building Landscape package..."
-bash scripts/build-landscape-package.sh
+bash $SCRIPT_DIR/build-landscape-package.sh
 
 echo "Building VyOS image..."
-sudo -E bash scripts/patch-and-build-vyos-image.sh
+sudo -E bash $SCRIPT_DIR/patch-and-build-vyos-image.sh
