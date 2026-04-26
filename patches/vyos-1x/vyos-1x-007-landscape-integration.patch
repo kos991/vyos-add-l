@@ -1,0 +1,161 @@
+diff --git a/interface-definitions/service-landscape.xml.in b/interface-definitions/service-landscape.xml.in
+new file mode 100644
+index 00000000..00000000
+--- /dev/null
++++ b/interface-definitions/service-landscape.xml.in
+@@ -0,0 +1,56 @@
++<?xml version="1.0"?>
++<interfaceDefinition>
++  <node name="service">
++    <children>
++      <node name="landscape" owner="${vyos_conf_scripts_dir}/service_landscape.py">
++        <properties>
++          <help>Landscape eBPF Router</help>
++          <priority>500</priority>
++        </properties>
++        <children>
++          <leafNode name="enable">
++            <properties>
++              <help>Enable Landscape Router service</help>
++              <valueless/>
++            </properties>
++          </leafNode>
++          <leafNode name="http-port">
++            <properties>
++              <help>HTTP redirect port</help>
++              <valueHelp>
++                <format>u32:1-65535</format>
++                <description>Port number</description>
++              </valueHelp>
++              <constraint>
++                <validator name="numeric" argument="--range 1-65535"/>
++              </constraint>
++            </properties>
++            <defaultValue>6300</defaultValue>
++          </leafNode>
++          <leafNode name="https-port">
++            <properties>
++              <help>HTTPS port for Web UI</help>
++              <valueHelp>
++                <format>u32:1-65535</format>
++                <description>Port number</description>
++              </valueHelp>
++              <constraint>
++                <validator name="numeric" argument="--range 1-65535"/>
++              </constraint>
++            </properties>
++            <defaultValue>6443</defaultValue>
++          </leafNode>
++          <leafNode name="config-dir">
++            <properties>
++              <help>Configuration directory</help>
++              <valueHelp>
++                <format>txt</format>
++                <description>Directory path</description>
++              </valueHelp>
++            </properties>
++            <defaultValue>/config/landscape</defaultValue>
++          </leafNode>
++        </children>
++      </node>
++    </children>
++  </node>
++</interfaceDefinition>
+diff --git a/src/conf_mode/service_landscape.py b/src/conf_mode/service_landscape.py
+new file mode 100755
+index 00000000..00000000
+--- /dev/null
++++ b/src/conf_mode/service_landscape.py
+@@ -0,0 +1,89 @@
++#!/usr/bin/env python3
++#
++# Copyright (C) 2024 VyOS maintainers and contributors
++#
++# This program is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License version 2 or later as
++# published by the Free Software Foundation.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program.  If not, see <http://www.gnu.org/licenses/>.
++
++import os
++
++from sys import exit
++from vyos.config import Config
++from vyos.template import render
++from vyos.utils.process import call
++from vyos import ConfigError
++from vyos import airbag
++airbag.enable()
++
++service_name = 'landscape-router'
++service_conf = '/run/landscape/landscape.env'
++
++def get_config(config=None):
++    if config:
++        conf = config
++    else:
++        conf = Config()
++
++    base = ['service', 'landscape']
++    if not conf.exists(base):
++        return None
++
++    landscape = conf.get_config_dict(base, key_mangling=('-', '_'),
++                                     get_first_key=True)
++    return landscape
++
++def verify(landscape):
++    if not landscape:
++        return None
++
++    return None
++
++def generate(landscape):
++    if not landscape:
++        return None
++
++    # Create config directory
++    config_dir = landscape.get('config_dir', '/config/landscape')
++    os.makedirs(config_dir, exist_ok=True)
++
++    # Create environment file for systemd
++    os.makedirs('/run/landscape', exist_ok=True)
++
++    with open(service_conf, 'w') as f:
++        f.write(f"HTTP_PORT={landscape.get('http_port', '6300')}\n")
++        f.write(f"HTTPS_PORT={landscape.get('https_port', '6443')}\n")
++        f.write(f"CONFIG_DIR={config_dir}\n")
++
++    return None
++
++def apply(landscape):
++    if not landscape or 'enable' not in landscape:
++        # Stop service
++        call(f'systemctl stop {service_name}.service')
++        call(f'systemctl disable {service_name}.service')
++        if os.path.exists(service_conf):
++            os.unlink(service_conf)
++        return None
++
++    # Start service
++    call(f'systemctl daemon-reload')
++    call(f'systemctl enable {service_name}.service')
++    call(f'systemctl restart {service_name}.service')
++
++    return None
++
++if __name__ == '__main__':
++    try:
++        c = get_config()
++        verify(c)
++        generate(c)
++        apply(c)
++    except ConfigError as e:
++        print(e)
++        exit(1)
