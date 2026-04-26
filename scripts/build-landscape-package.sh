@@ -1,0 +1,130 @@
+#!/bin/bash
+
+set -e
+
+LANDSCAPE_VERSION="0.18.3"
+LANDSCAPE_ARCH="x86_64"
+PACKAGE_NAME="landscape-router"
+PACKAGE_VERSION="${LANDSCAPE_VERSION}"
+BUILD_DIR="/tmp/landscape-build"
+INSTALL_DIR="${BUILD_DIR}/install"
+
+echo "Building Landscape Router package v${LANDSCAPE_VERSION}"
+
+# Clean and create build directory
+rm -rf ${BUILD_DIR}
+mkdir -p ${INSTALL_DIR}/opt/vyos/landscape
+mkdir -p ${INSTALL_DIR}/lib/systemd/system
+mkdir -p ${INSTALL_DIR}/DEBIAN
+
+# Download landscape-webserver binary
+echo "Downloading landscape-webserver..."
+curl -L -o ${INSTALL_DIR}/opt/vyos/landscape/landscape-webserver \
+    "https://github.com/ThisSeanZhang/landscape/releases/download/v${LANDSCAPE_VERSION}/landscape-webserver-${LANDSCAPE_ARCH}"
+
+chmod +x ${INSTALL_DIR}/opt/vyos/landscape/landscape-webserver
+
+# Download static files
+echo "Downloading static files..."
+curl -L -o /tmp/static.zip \
+    "https://github.com/ThisSeanZhang/landscape/releases/download/v${LANDSCAPE_VERSION}/static.zip"
+
+unzip -q /tmp/static.zip -d ${INSTALL_DIR}/opt/vyos/landscape/
+rm /tmp/static.zip
+
+# Create systemd service file
+cat > ${INSTALL_DIR}/lib/systemd/system/landscape-router.service << 'EOF'
+[Unit]
+Description=Landscape eBPF Router
+Documentation=https://landscape.whileaway.dev/
+After=network.target vyos-router.service
+Wants=docker.service
+
+[Service]
+Type=simple
+ExecStart=/opt/vyos/landscape/landscape-webserver \
+    --config-dir /config/landscape \
+    --http-port 6300 \
+    --https-port 6443
+Restart=always
+RestartSec=10
+User=root
+LimitMEMLOCK=infinity
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Create postinst script
+cat > ${INSTALL_DIR}/DEBIAN/postinst << 'EOF'
+#!/bin/bash
+set -e
+
+# Create config directory if it doesn't exist
+if [ ! -d /config/landscape ]; then
+    mkdir -p /config/landscape
+    chown root:vyattacfg /config/landscape
+    chmod 775 /config/landscape
+fi
+
+# Reload systemd
+systemctl daemon-reload
+
+echo "Landscape Router installed successfully!"
+echo "To enable: systemctl enable --now landscape-router"
+echo "Web UI: https://\$(hostname):6443 (default user/pass: root/root)"
+
+exit 0
+EOF
+
+chmod +x ${INSTALL_DIR}/DEBIAN/postinst
+
+# Create prerm script
+cat > ${INSTALL_DIR}/DEBIAN/prerm << 'EOF'
+#!/bin/bash
+set -e
+
+# Stop service if running
+if systemctl is-active --quiet landscape-router; then
+    systemctl stop landscape-router
+fi
+
+exit 0
+EOF
+
+chmod +x ${INSTALL_DIR}/DEBIAN/prerm
+
+# Create DEBIAN control file
+cat > ${INSTALL_DIR}/DEBIAN/control << EOF
+Package: ${PACKAGE_NAME}
+Version: ${PACKAGE_VERSION}
+Section: net
+Priority: optional
+Architecture: amd64
+Maintainer: VyOS Package Maintainers <maintainers@vyos.net>
+Description: Landscape eBPF-based Linux Router Platform
+ Landscape is an eBPF-based Linux routing platform that provides
+ network service management, policy control, and API.
+ .
+ Features:
+  - eBPF traffic splitting and routing
+  - Per-flow DNS configuration and caching
+  - Traffic redirection to Docker containers
+  - Fine-grained NAT control
+  - Web UI and REST API management
+Depends: libc6 (>= 2.31)
+Recommends: docker.io
+Homepage: https://github.com/ThisSeanZhang/landscape
+EOF
+
+# Build the package
+echo "Building .deb package..."
+dpkg-deb --build ${INSTALL_DIR} ${BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb
+
+# Copy to output
+mkdir -p ./packages
+cp ${BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb ./packages/
+
+echo "Package built successfully: ${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb"
+ls -lh ./packages/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb
