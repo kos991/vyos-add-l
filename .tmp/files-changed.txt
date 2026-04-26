@@ -1,0 +1,205 @@
+# Landscape 集成 - 文件变更清单
+
+## 新增文件
+
+### 补丁文件
+1. patches/main/linux-kernel-defconfig.patch (已更新)
+   - 添加 BPF/BTF 配置段
+   - 56 个配置项
+
+2. patches/vyos-build/0016-add-landscape-package.patch (新建)
+   - Landscape 软件包补丁
+
+3. patches/vyos-1x/vyos-1x-007-landscape-integration.patch (新建)
+   - VyOS 配置集成
+   - XML 配置定义
+   - Python 配置脚本
+
+### 构建脚本
+4. scripts/build-landscape-package.sh (新建)
+   - 独立的 Landscape 包构建脚本
+   - 下载二进制和静态资源
+   - 创建 .deb 包
+
+5. scripts/build-all.sh (已更新)
+   - 添加 Landscape 构建步骤
+
+6. scripts/patch-and-build-vyos-image.sh (已更新)
+   - 添加 --custom-package landscape-router
+
+### 文档
+7. LANDSCAPE-INTEGRATION.md (新建)
+   - 完整集成文档
+   - 8000+ 字
+   - 安装、配置、故障排查
+
+8. LANDSCAPE-QUICKSTART.md (新建)
+   - 快速开始指南
+   - 5 分钟上手
+
+9. README.md (已更新)
+   - 添加 Landscape 介绍
+
+### 临时文件（.tmp/）
+10. .tmp/bpf-btf-implementation-summary.md
+    - BPF/BTF 配置说明
+
+11. .tmp/landscape-integration-analysis.md
+    - 可行性分析（8000+ 字）
+
+12. .tmp/landscape-integration-summary.md
+    - 快速评估摘要
+
+13. .tmp/integration-summary.md
+    - 集成完成总结
+
+14. .tmp/files-changed.txt
+    - 本文件
+
+## 修改文件
+
+1. patches/main/linux-kernel-defconfig.patch
+   - 原有: 无线驱动 + SWAP 配置
+   - 新增: BPF/BTF 配置段（56 个配置项）
+
+2. scripts/build-all.sh
+   - 原有: 构建内核和镜像
+   - 新增: 构建 Landscape 包
+
+3. scripts/patch-and-build-vyos-image.sh
+   - 原有: 自定义包列表
+   - 新增: landscape-router 包
+
+4. README.md
+   - 原有: 项目简介
+   - 新增: Landscape 集成说明
+
+## 文件统计
+
+新增文件: 14
+修改文件: 4
+总计: 18 个文件
+
+代码行数:
+- 补丁: ~200 行
+- 脚本: ~150 行
+- 文档: ~15000 字
+
+## 目录结构
+
+vyos-unofficial/
+├── patches/
+│   ├── main/
+│   │   └── linux-kernel-defconfig.patch (更新)
+│   ├── vyos-1x/
+│   │   ├── vyos-1x-005-fix_podman_service.patch
+│   │   ├── vyos-1x-006-add-mlnx-switch-support.patch
+│   │   └── vyos-1x-007-landscape-integration.patch (新建)
+│   └── vyos-build/
+│       ├── 0001-linkstate-ip-device-attribute.patch
+│       ├── ...
+│       └── 0016-add-landscape-package.patch (新建)
+├── scripts/
+│   ├── build-all.sh (更新)
+│   ├── build-landscape-package.sh (新建)
+│   ├── patch-and-build-kernel.sh
+│   ├── patch-and-build-kernel-related-packages.sh
+│   ├── patch-and-build-vyos-1x.sh
+│   ├── patch-and-build-vyos-image.sh (更新)
+│   └── set_kernel_version.sh
+├── .tmp/
+│   ├── bpf-btf-implementation-summary.md
+│   ├── landscape-integration-analysis.md
+│   ├── landscape-integration-summary.md
+│   ├── integration-summary.md
+│   └── files-changed.txt
+├── README.md (更新)
+├── LANDSCAPE-INTEGRATION.md (新建)
+├── LANDSCAPE-QUICKSTART.md (新建)
+├── build.conf
+└── .gitignore
+
+## Git 提交建议
+
+建议分为以下几个提交:
+
+### Commit 1: 启用 BPF/BTF 内核支持
+git add patches/main/linux-kernel-defconfig.patch
+git add .tmp/bpf-btf-implementation-summary.md
+git commit -m "feat: enable BPF/BTF kernel support
+
+- Add 56 BPF/BTF configuration options
+- Enable eBPF JIT compiler
+- Enable XDP support
+- Enable BPF LSM
+- Enable BTF debug info generation
+
+Required for Landscape eBPF router integration."
+
+### Commit 2: 添加 Landscape 软件包
+git add patches/vyos-build/0016-add-landscape-package.patch
+git add scripts/build-landscape-package.sh
+git commit -m "feat: add Landscape router package
+
+- Create landscape-router deb package
+- Download v0.18.3 binaries and static files
+- Add systemd service configuration
+- Add postinst/prerm scripts"
+
+### Commit 3: 集成到构建流程
+git add scripts/build-all.sh
+git add scripts/patch-and-build-vyos-image.sh
+git commit -m "feat: integrate Landscape into build process
+
+- Add Landscape package build step
+- Include landscape-router in custom packages
+- Update build-all.sh workflow"
+
+### Commit 4: VyOS 配置集成
+git add patches/vyos-1x/vyos-1x-007-landscape-integration.patch
+git commit -m "feat: add VyOS configuration for Landscape
+
+- Add 'service landscape' configuration node
+- Support enable/disable, port, and config-dir options
+- Add Python configuration script
+- Add XML interface definition"
+
+### Commit 5: 文档
+git add README.md
+git add LANDSCAPE-INTEGRATION.md
+git add LANDSCAPE-QUICKSTART.md
+git add .tmp/landscape-integration-*.md
+git add .tmp/integration-summary.md
+git commit -m "docs: add Landscape integration documentation
+
+- Update README with Landscape introduction
+- Add comprehensive integration guide
+- Add quick start guide
+- Add feasibility analysis and summary"
+
+## 验证清单
+
+构建前验证:
+- [ ] 所有补丁文件格式正确
+- [ ] 构建脚本可执行权限
+- [ ] 文档链接正确
+
+构建后验证:
+- [ ] ISO 成功生成
+- [ ] landscape-router 包已包含
+- [ ] 内核 BPF/BTF 配置已启用
+- [ ] systemd 服务文件存在
+
+运行时验证:
+- [ ] Landscape 服务可启动
+- [ ] Web UI 可访问
+- [ ] VyOS 配置命令可用
+- [ ] BPF 程序可加载
+
+## 下一步
+
+1. 提交代码到 Git
+2. 推送到 GitHub
+3. 触发 GitHub Actions 构建
+4. 测试生成的 ISO
+5. 收集反馈并改进
