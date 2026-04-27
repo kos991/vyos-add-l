@@ -1,3 +1,18 @@
+diff --git a/data/architectures/amd64.toml b/data/architectures/amd64.toml
+index 00000000..00000000 100644
+--- a/data/architectures/amd64.toml
++++ b/data/architectures/amd64.toml
+@@ -12,4 +12,8 @@ packages = [
+   "amd64-microcode"
+ ]
+
+-serial_interface = "ttyS0,115200"
+\ No newline at end of file
++serial_interface = "ttyS0,115200"
++
++[packages.landscape-router]
++  scm = "local"
++  architecture = "amd64"
 diff --git a/data/live-build-config/package-lists/custom-packages.list.chroot b/data/live-build-config/package-lists/custom-packages.list.chroot
 index 00000000..00000000 100644
 --- a/data/live-build-config/package-lists/custom-packages.list.chroot
