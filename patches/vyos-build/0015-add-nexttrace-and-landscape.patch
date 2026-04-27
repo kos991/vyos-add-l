@@ -6,14 +6,14 @@ Add nexttrace APT repository for amd64 architecture and landscape-router
 package configuration.
 
 ---
- data/architectures/amd64.toml | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ data/architectures/amd64.toml | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
 diff --git a/data/architectures/amd64.toml b/data/architectures/amd64.toml
-index 1234567..abcdefg 100644
+index 09a9de9..5f9542f 100644
 --- a/data/architectures/amd64.toml
 +++ b/data/architectures/amd64.toml
-@@ -11,8 +11,21 @@ packages = [
+@@ -12,5 +12,17 @@ packages = [
    "amd64-microcode"
  ]
 
@@ -31,7 +31,5 @@ index 1234567..abcdefg 100644
 +  components = ""
 +  no_source = true
 +  key = "mDMEaO7vHRYJKwYBBAHaRw8BAQdAXY+aVR+gfjDiaI1CQZXTiaOJI9ZOEziFVxQPheIyrDG0IW54dHJhY2Uub3JnIDxjb250YWN0QG54dHJhY2Uub3JnPoiTBBMWCgA7FiEEoqH7meOhHVsUbhcLNigaslezB/oFAmju7x0CGwMFCwkIBwICIgIGFQoJCAsCBBYCAwECHgcCF4AACgkQNigaslezB/rjdQD+JmXqnB3kmkKVQRfH7urC/zTkp2UkkLhUw+dykoCTggcBAK5qLKvUJN6Xu3TF0dEuBqVV9+14OkTbg4Ymaw7gUpEPuDgEaO7vHRIKKwYBBAGXVQEFAQEHQILPhsR2XsUYs7orwth28VQZRlXznHYsjCISbUb+UPgxAwEIB4h4BBgWCgAgFiEEoqH7meOhHVsUbhcLNigaslezB/oFAmju7x0CGwwACgkQNigaslezB/qHNwD/d3Yl/QhT/62Cghg575+XTEbnsrCIhazszdTd8NB4OFUA+wU421K4YjDrCAQy+C77YlRQ1pxFv3cYIMHn3H9qTEUM"
-
- # vim: ft=toml
 --
 2.39.2
