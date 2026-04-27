@@ -2,15 +2,17 @@ diff --git a/data/architectures/amd64.toml b/data/architectures/amd64.toml
 index 00000000..00000000 100644
 --- a/data/architectures/amd64.toml
 +++ b/data/architectures/amd64.toml
-@@ -12,3 +12,7 @@ packages = [
+@@ -11,6 +11,10 @@ packages = [
+   "intel-microcode",
    "amd64-microcode"
  ]
-
++
 +[packages.landscape-router]
 +  scm = "local"
 +  architecture = "amd64"
-+
+
  [boot_settings]
+   console_type = "ttyS"
 diff --git a/data/live-build-config/package-lists/custom-packages.list.chroot b/data/live-build-config/package-lists/custom-packages.list.chroot
 index 00000000..00000000 100644
 --- a/data/live-build-config/package-lists/custom-packages.list.chroot
