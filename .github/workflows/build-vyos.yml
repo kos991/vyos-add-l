@@ -7,12 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Tag to build"
-        required: true
+        description: "Branch, tag, or commit SHA to build"
+        required: false
 
 jobs:
   build_and_release:
     runs-on: ubuntu-latest
+    timeout-minutes: 360
     permissions:
       contents: write
     container:
@@ -35,7 +36,19 @@ jobs:
           bash scripts/build-all.sh
           echo "vyos_version=$(cat build/vyos_version)" >> $GITHUB_OUTPUT
 
+      - name: Upload build artifacts
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vyos-build-${{ steps.build.outputs.vyos_version || github.run_id }}
+          path: |
+            build/vyos_version
+            build/vyos-*.iso
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Publish release
+        if: ${{ github.event_name == 'push' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}

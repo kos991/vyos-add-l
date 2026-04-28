@@ -2,6 +2,11 @@
 
 set -e
 
+if [ -z "${VYOS_BUILD_ROOT:-}" ]; then
+    echo "VYOS_BUILD_ROOT is not set"
+    exit 1
+fi
+
 LANDSCAPE_VERSION="0.18.3"
 LANDSCAPE_ARCH="x86_64"
 PACKAGE_NAME="landscape-router"
@@ -122,9 +127,9 @@ EOF
 echo "Building .deb package..."
 dpkg-deb --build ${INSTALL_DIR} ${BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb
 
-# Copy to output
-mkdir -p ./packages
-cp ${BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb ./packages/
+# Copy to the package pool consumed by vyos-build image creation
+mkdir -p "${VYOS_BUILD_ROOT}/packages"
+cp ${BUILD_DIR}/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb "${VYOS_BUILD_ROOT}/packages/"
 
 echo "Package built successfully: ${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb"
-ls -lh ./packages/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb
+ls -lh "${VYOS_BUILD_ROOT}/packages/${PACKAGE_NAME}_${PACKAGE_VERSION}_amd64.deb"

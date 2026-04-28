@@ -87,7 +87,7 @@ vyos-unofficial/
 │   ├── vyos-1x/
 │   │   └── vyos-1x-007-landscape-integration.patch  # VyOS 配置集成
 │   └── vyos-build/
-│       └── 0016-add-landscape-package.patch   # 软件包补丁
+│       └── 0015-add-nexttrace-and-landscape.patch   # merged nexttrace/Landscape patch
 ├── scripts/
 │   ├── build-landscape-package.sh             # Landscape 包构建
 │   ├── build-all.sh                           # 主构建脚本（已更新）
@@ -182,8 +182,8 @@ bash scripts/patch-and-build-kernel.sh
 **问题**: Landscape 下载失败
 ```bash
 # 解决: 手动下载后放置
-mkdir -p packages
-# 下载 landscape-router_0.18.3_amd64.deb 到 packages/
+mkdir -p vyos-build/packages
+# place landscape-router_0.18.3_amd64.deb into vyos-build/packages/
 ```
 
 ### 运行时问题
