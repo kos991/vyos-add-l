@@ -29,11 +29,39 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref || github.ref_name }}
 
-      - name: Build all
+      - name: Prepare build environment
+        run: |
+          echo "PROJECT_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+          echo "VYOS_BUILD_ROOT=$GITHUB_WORKSPACE/vyos-build" >> $GITHUB_ENV
+          echo "SCRIPT_DIR=$GITHUB_WORKSPACE/scripts" >> $GITHUB_ENV
+
+      - name: Update package lists
+        run: sudo apt-get update
+
+      - name: Clone vyos-build
+        run: git clone https://github.com/vyos/vyos-build
+
+      - name: Build vyos-1x package
+        run: bash "$SCRIPT_DIR/patch-and-build-vyos-1x.sh"
+
+      - name: Build kernel package
+        run: bash "$SCRIPT_DIR/patch-and-build-kernel.sh"
+
+      - name: Build kernel-related packages
+        run: bash "$SCRIPT_DIR/patch-and-build-kernel-related-packages.sh"
+
+      - name: Clean kernel package tree
+        run: rm -rf "$VYOS_BUILD_ROOT/scripts/package-build/linux-kernel"
+
+      - name: Build Landscape package
+        run: bash "$SCRIPT_DIR/build-landscape-package.sh"
+
+      - name: Build VyOS image
+        run: sudo -E bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
+
+      - name: Read build version
         id: build
         run: |
-          cd $GITHUB_WORKSPACE
-          bash scripts/build-all.sh
           echo "vyos_version=$(cat build/vyos_version)" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
