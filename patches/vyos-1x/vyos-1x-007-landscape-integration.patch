@@ -1,9 +1,9 @@
 diff --git a/interface-definitions/service-landscape.xml.in b/interface-definitions/service-landscape.xml.in
 new file mode 100644
-index 00000000..00000000
+index 0000000000000000000000000000000000000000..71beff69b35d0b3a4c11ecb1b44f8cf0dd644527
 --- /dev/null
 +++ b/interface-definitions/service-landscape.xml.in
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,57 @@
 +<?xml version="1.0"?>
 +<interfaceDefinition>
 +  <node name="service">
@@ -63,10 +63,10 @@ index 00000000..00000000
 +</interfaceDefinition>
 diff --git a/src/conf_mode/service_landscape.py b/src/conf_mode/service_landscape.py
 new file mode 100755
-index 00000000..00000000
+index 0000000000000000000000000000000000000000..bcbe3f254329e7e2a7d51937cb7ae8597b5b2d30
 --- /dev/null
 +++ b/src/conf_mode/service_landscape.py
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,92 @@
 +#!/usr/bin/env python3
 +#
 +# Copyright (C) 2024 VyOS maintainers and contributors
