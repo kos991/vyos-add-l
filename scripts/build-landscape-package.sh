@@ -47,10 +47,14 @@ Wants=docker.service
 
 [Service]
 Type=simple
+Environment=HTTP_PORT=6300
+Environment=HTTPS_PORT=6443
+Environment=CONFIG_DIR=/config/landscape
+EnvironmentFile=-/run/landscape/landscape.env
 ExecStart=/opt/vyos/landscape/landscape-webserver \
-    --config-dir /config/landscape \
-    --http-port 6300 \
-    --https-port 6443
+    --config-dir $CONFIG_DIR \
+    --http-port $HTTP_PORT \
+    --https-port $HTTPS_PORT
 Restart=always
 RestartSec=10
 User=root
