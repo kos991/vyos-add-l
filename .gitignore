@@ -1,3 +1,5 @@
 /build/
 /vyos-arm64-build/
 /vyos-build/
+/.worktrees
+/.worktrees/
