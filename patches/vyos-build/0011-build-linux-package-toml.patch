@@ -2,15 +2,13 @@ diff --git a/scripts/package-build/linux-kernel/package.toml b/scripts/package-b
 index 1fe68af6..f2ffb650 100644
 --- a/scripts/package-build/linux-kernel/package.toml
 +++ b/scripts/package-build/linux-kernel/package.toml
-@@ -8,7 +8,7 @@ build_cmd = "build_kernel"
+@@ -13,5 +13,5 @@
  [[packages]]
  name = "linux-firmware"
- commit_id = "20250410"
+ commit_id = "20260110"
 -scm_url = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"
 +scm_url = "https://github.com/beagleboard/mirror-linux-firmware.git"
  build_cmd = "build_linux_firmware"
- 
- [[packages]]
 @@ -24,13 +24,13 @@ build_cmd = "build_accel_ppp_ng"
  
  [[packages]]
