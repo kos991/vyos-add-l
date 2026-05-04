@@ -5,7 +5,8 @@ index 1fe68af6..f2ffb650 100644
 @@ -13,5 +13,5 @@
  [[packages]]
  name = "linux-firmware"
- commit_id = "20260110"
+-commit_id = "20260110"
++commit_id = "20250410"
 -scm_url = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git"
 +scm_url = "https://github.com/beagleboard/mirror-linux-firmware.git"
  build_cmd = "build_linux_firmware"
