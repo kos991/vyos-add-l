@@ -56,8 +56,14 @@ jobs:
       - name: Build Landscape package
         run: bash "$SCRIPT_DIR/build-landscape-package.sh"
 
+      - name: Prepare VyOS image inputs
+        run: sudo -E env VYOS_IMAGE_PHASE=prepare bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
+
+      - name: Validate VyOS image configuration
+        run: sudo -E env VYOS_IMAGE_PHASE=dry-run bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
+
       - name: Build VyOS image
-        run: sudo -E bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
+        run: sudo -E env VYOS_IMAGE_PHASE=build bash "$SCRIPT_DIR/patch-and-build-vyos-image.sh"
 
       - name: Read build version
         id: build
